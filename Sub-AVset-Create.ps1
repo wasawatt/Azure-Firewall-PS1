@@ -2,7 +2,7 @@
 
 #region variables
 $subscr="MSDN Platforms"                           #verify on the Azure Portal
-$rgName="rg_scb_test4"                             #for foundation resources creating
+$rgName="rg_scb_test5"                             #for foundation resources creating
 $locName="southeastasia"
 $FwAvailabilitySetName = "PaloAVSet"               #for test, it will re-definded in 'Sub-SA-n-2VM3nics.ps1' again beware!!
 #endregion

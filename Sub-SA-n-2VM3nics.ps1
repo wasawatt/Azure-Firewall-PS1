@@ -2,7 +2,7 @@
 
 #region variables
 $subscr="MSDN Platforms"                           #verify on the Azure Portal
-$rgName="rg_scb_test4"                             #for foundation resources creating
+$rgName="rg_scb_test5"                             #for foundation resources creating
 $locName="southeastasia"
 $FwVNetName="FwVNET"
 $StorageAccountPrefix = "scb"
@@ -18,9 +18,14 @@ $FwVM01_TrustNicName="FwVM1_nic0_trust_data"
 $FwVM01_UnTrustNicName="FwVM1_nic1_untrust_data"
 $FwVM01_MgmtNicName="FwVM1_nic2_trust_mgmt"  
 $FwVM02Name="vmseries02"
-$FwVM02_TrustNicName="FwVM2_trust_data"
-$FwVM02_UnTrustNicName="FwVM2_untrust_data"
-$FwVM02_MgmtNicName="FwVM2_trust_mgmt"
+$FwVM02_TrustNicName="FwVM2_nic0_trust_data"
+$FwVM02_UnTrustNicName="FwVM2_nic1_untrust_data"
+$FwVM02_MgmtNicName="FwVM2_nic3_trust_mgmt"
+## VMseries image infoirmation
+$FwImagePublisherName="MicrosoftWindowsServer"
+$FwImageOffer="WindowsServer"
+$FwImageSkus="2016-Datacenter"
+$FwImageVersion="latest"
 #endregion
 
 #region get_credential_ARMSubscription
@@ -145,6 +150,36 @@ $FwVMConfig_1 = Add-AzureRmVMNetworkInterface -VM $FwVMConfig_1 -Id $Fw1Nic3.Id 
 
 ##Creating the VM with defined configuration
 New-AzureRmVM -VM $FwVMConfig_1 -ResourceGroupName $rgName -Location $locName -ErrorAction Stop
+
+##-----------------------
+## VMseries No.2 information
+$FwVMConfig_2 = New-AzureRmVMConfig -VMName $FwVM02Name -VMSize $FwVMSize -AvailabilitySetID $FwAvailabilitySetObj.Id
+
+## VMSeries No.2 configuration
+$FwVMConfig_2 = Set-AzureRmVMOperatingSystem -VM $FwVMConfig_2 `
+    -Windows `
+    -ComputerName $FwVM02Name `
+    -Credential $FwVMCred `
+    -ProvisionVMAgent `
+    -EnableAutoUpdate `
+    -TimeZone $TimeZone `
+    
+    
+$FwVMConfig_2 = Set-AzureRmVMSourceImage -VM $FwVMConfig_2 `
+    -PublisherName "MicrosoftWindowsServer" `
+    -Offer "WindowsServer" `
+    -Skus "2016-Datacenter" `
+    -Version "latest"
+
+##Attaching NIC to the VM
+$FwVMConfig_2 = Add-AzureRmVMNetworkInterface -VM $FwVMConfig_2 -Id $Fw2Nic1.Id
+$FwVMConfig_2 = Add-AzureRmVMNetworkInterface -VM $FwVMConfig_2 -Id $Fw2Nic2.Id
+$FwVMConfig_2 = Add-AzureRmVMNetworkInterface -VM $FwVMConfig_2 -Id $Fw2Nic3.Id -Primary
+
+##Creating the VM with defined configuration
+New-AzureRmVM -VM $FwVMConfig_2 -ResourceGroupName $rgName -Location $locName -ErrorAction Stop 
+
+
 #endregion
 
 #$vm = New-AzureRmVMConfig
